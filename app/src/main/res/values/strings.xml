@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Popular Movies App</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="base_url">http://api.themoviedb.org/3/discover</string>
+    <string name="image_base_url">http://image.tmdb.org/t/p/w185/</string>
+    <string name="api_key">8772f2388dd6d766a5ed2fa12c863e6f</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_detail">DetailActivity</string>
+</resources>
