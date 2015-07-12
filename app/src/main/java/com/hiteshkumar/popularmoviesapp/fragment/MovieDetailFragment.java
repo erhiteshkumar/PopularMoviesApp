@@ -1,51 +1,41 @@
 package com.hiteshkumar.popularmoviesapp.fragment;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.graphics.Palette;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.hiteshkumar.popularmoviesapp.R;
+import com.hiteshkumar.popularmoviesapp.model.MovieBasic;
+import com.hiteshkumar.popularmoviesapp.util.Util;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
-
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link MovieDetailFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link MovieDetailFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class MovieDetailFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_PARAM = "movie_detail";
+    private MovieBasic mMovie;
+    private TextView mMovieTitleTextView;
+    private TextView mMovieRatingTextView;
+    private TextView mMovieOverviewTextView;
+    private TextView mMovieReleaseDateTextView;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private ImageView mMovieBackdropImageView;
+    private ImageView mMoviePosterImageView;
 
     private OnFragmentInteractionListener mListener;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment MovieDetailFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static MovieDetailFragment newInstance(String param1, String param2) {
+    public static MovieDetailFragment newInstance(Bundle bundle) {
         MovieDetailFragment fragment = new MovieDetailFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
+        fragment.setArguments(bundle);
         return fragment;
     }
 
@@ -57,19 +47,69 @@ public class MovieDetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mMovie = getArguments().getParcelable(ARG_PARAM);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_movie_detail, container, false);
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mMovieTitleTextView = (TextView)view.findViewById(R.id.movieTitleTextView);
+        mMovieRatingTextView = (TextView)view.findViewById(R.id.movieRatingTextView);
+        mMovieOverviewTextView = (TextView)view.findViewById(R.id.movieOverviewTextView);
+        mMovieReleaseDateTextView = (TextView)view.findViewById(R.id.movieReleaseDateTextView);
+
+        mMovieBackdropImageView = (ImageView)view.findViewById(R.id.movieBackdropImageView);
+        mMoviePosterImageView = (ImageView)view.findViewById(R.id.moviePosterImageView);
+
+        mMovieTitleTextView.setText(mMovie.getTitle());
+        StringBuilder rating = new StringBuilder(getString(R.string.ratings));
+        rating.append(" ");
+        rating.append(mMovie.getVoteAverage());
+        StringBuilder relaseDate = new StringBuilder(getString(R.string.release_date));
+        relaseDate.append(" ");
+        relaseDate.append(mMovie.getReleaseDate());
+        mMovieReleaseDateTextView.setText(relaseDate);
+        mMovieRatingTextView.setText(rating);
+        mMovieOverviewTextView.setText(mMovie.getOverview());
+        Picasso.with(getActivity()).load(Util.getMoviePosterPath(getActivity(), mMovie)).into(mMoviePosterImageView);
+
+        Picasso.with(getActivity()).load(Util.getMovieBackdropImagePath(getActivity(),mMovie)).into(new Target() {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+
+                mMovieBackdropImageView.setImageBitmap(bitmap);
+                Palette.generateAsync(bitmap, new Palette.PaletteAsyncListener() {
+                    @Override
+                    public void onGenerated(Palette palette) {
+                        Palette.Swatch vibrant = palette.getVibrantSwatch();
+                        if (vibrant != null) {
+                            mMovieTitleTextView.setBackgroundColor(vibrant.getTitleTextColor());
+                            mMovieTitleTextView.setTextColor(vibrant.getBodyTextColor());
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {
+                mMovieBackdropImageView.setImageDrawable(getResources().getDrawable(R.drawable.image_not_found));
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+                mMovieBackdropImageView.setImageDrawable(getResources().getDrawable(R.drawable.loading_image));
+            }
+        });
+    }
+
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -93,16 +133,7 @@ public class MovieDetailFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);

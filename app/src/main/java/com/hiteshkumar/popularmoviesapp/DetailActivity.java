@@ -21,10 +21,9 @@ public class DetailActivity extends AppCompatActivity implements OnFragmentInter
             // using a fragment transaction.
 
             Bundle arguments = new Bundle();
-            arguments.putParcelable("movie_detail", getIntent().getBundleExtra("movie_detail"));
+            arguments.putAll(getIntent().getBundleExtra("movie_detail"));
 
-            MovieDetailFragment fragment = new MovieDetailFragment();
-            fragment.setArguments(arguments);
+            MovieDetailFragment fragment = MovieDetailFragment.newInstance(arguments);
 
             getSupportFragmentManager().beginTransaction().add(R.id.movie_detail_container, fragment).commit();
         }

@@ -52,7 +52,7 @@ public class ImageAdapter extends BaseAdapter {
             imageView = (ImageView) convertView;
         }
 
-        Picasso.with(mContext).load(Util.getMoviePosterPath(mContext,list.get(position))).into(imageView);
+        Picasso.with(mContext).load(Util.getMoviePosterPath(mContext,list.get(position))).placeholder(R.drawable.loading_thumbnail).error(R.drawable.not_available).into(imageView);
         return imageView;
     }
 }
