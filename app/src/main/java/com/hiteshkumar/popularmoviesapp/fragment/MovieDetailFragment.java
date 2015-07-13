@@ -86,14 +86,11 @@ public class MovieDetailFragment extends Fragment {
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
 
                 mMovieBackdropImageView.setImageBitmap(bitmap);
-                Palette.generateAsync(bitmap, new Palette.PaletteAsyncListener() {
-                    @Override
-                    public void onGenerated(Palette palette) {
-                        Palette.Swatch vibrant = palette.getVibrantSwatch();
-                        if (vibrant != null) {
-                            mMovieTitleTextView.setBackgroundColor(vibrant.getTitleTextColor());
-                            mMovieTitleTextView.setTextColor(vibrant.getBodyTextColor());
-                        }
+                Palette.generateAsync(bitmap, palette -> {
+                    Palette.Swatch vibrant = palette.getVibrantSwatch();
+                    if (vibrant != null) {
+                        mMovieTitleTextView.setBackgroundColor(vibrant.getTitleTextColor());
+                        mMovieTitleTextView.setTextColor(vibrant.getBodyTextColor());
                     }
                 });
             }

@@ -78,12 +78,7 @@ public class HomeActivityFragment extends Fragment {
         {
             mGridview.setNumColumns(5);
         }
-        mGridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ((OnFragmentMovieClickListener) getActivity()).onFragmentInteraction(mList.get(position));
-            }
-        });
+        mGridview.setOnItemClickListener((parent, view1, position, id) -> ((OnFragmentMovieClickListener) getActivity()).onFragmentInteraction(mList.get(position)));
         if (mList == null){
             connectAndFetch();
 
@@ -91,12 +86,9 @@ public class HomeActivityFragment extends Fragment {
             mGridview.setAdapter(new ImageAdapter(getActivity(), mList));
         }
 
-        mRetryButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mErrorLayout.setVisibility(View.GONE);
-                connectAndFetch();
-            }
+        mRetryButton.setOnClickListener(v -> {
+            mErrorLayout.setVisibility(View.GONE);
+            connectAndFetch();
         });
     }
 
