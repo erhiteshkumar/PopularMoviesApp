@@ -1,9 +1,12 @@
 package com.hiteshkumar.popularmoviesapp;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -16,14 +19,20 @@ import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
+import android.support.v7.internal.view.menu.ActionMenuItemView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ActionMenuView;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 
 import java.util.List;
 
@@ -104,9 +113,38 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        LinearLayout root = (LinearLayout) findViewById(android.R.id.list).getParent().getParent().getParent();
-        Toolbar bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.setting_layout, root, false);
-        root.addView(bar, 0); // insert at top
+        Toolbar bar;
+//        LinearLayout root = (LinearLayout) findViewById(android.R.id.list).getParent().getParent().getParent();
+//        Toolbar bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.setting_toolbar, root, false);
+//        root.addView(bar, 0); // insert at top
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            LinearLayout root = (LinearLayout) findViewById(android.R.id.list).getParent().getParent().getParent();
+            bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.setting_toolbar, root, false);
+            bar.setTitleTextColor(getResources().getColor(R.color.white));
+            root.addView(bar, 0); // insert at top
+        } else {
+            ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
+            ListView content = (ListView) root.getChildAt(0);
+
+            root.removeAllViews();
+
+            bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.setting_toolbar, root, false);
+
+
+            int height;
+            TypedValue tv = new TypedValue();
+            if (getTheme().resolveAttribute(R.attr.actionBarSize, tv, true)) {
+                height = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
+            }else{
+                height = bar.getHeight();
+            }
+
+            content.setPadding(0, height, 0, 0);
+
+            root.addView(content);
+            root.addView(bar);
+        }
+        colorizeToolbar(bar,getResources().getColor(R.color.white),this);
         bar.setNavigationOnClickListener(v -> callHomeActivity());
     }
 
@@ -181,4 +219,48 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         super.onBackPressed();
         callHomeActivity();
     }
+
+    public static void colorizeToolbar(Toolbar toolbarView, int toolbarIconsColor, Activity activity) {
+        final PorterDuffColorFilter colorFilter
+                = new PorterDuffColorFilter(toolbarIconsColor, PorterDuff.Mode.MULTIPLY);
+
+        for(int i = 0; i < toolbarView.getChildCount(); i++) {
+            final View v = toolbarView.getChildAt(i);
+
+            //Step 1 : Changing the color of back button (or open drawer button).
+            if(v instanceof ImageButton) {
+                //Action Bar back button
+                ((ImageButton)v).getDrawable().setColorFilter(colorFilter);
+            }
+
+            if(v instanceof ActionMenuView) {
+                for(int j = 0; j < ((ActionMenuView)v).getChildCount(); j++) {
+
+                    //Step 2: Changing the color of any ActionMenuViews - icons that
+                    //are not back button, nor text, nor overflow menu icon.
+                    final View innerView = ((ActionMenuView)v).getChildAt(j);
+
+                    if(innerView instanceof ActionMenuItemView) {
+                        int drawablesCount = ((ActionMenuItemView)innerView).getCompoundDrawables().length;
+                        for(int k = 0; k < drawablesCount; k++) {
+                            if(((ActionMenuItemView)innerView).getCompoundDrawables()[k] != null) {
+                                final int finalK = k;
+
+                                //Important to set the color filter in seperate thread,
+                                //by adding it to the message queue
+                                //Won't work otherwise.
+                                innerView.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        ((ActionMenuItemView) innerView).getCompoundDrawables()[finalK].setColorFilter(colorFilter);
+                                    }
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 }
