@@ -20,16 +20,20 @@ import com.hiteshkumar.popularmoviesapp.util.Util;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 public class MovieDetailFragment extends Fragment {
+
     private static final String ARG_PARAM = "movie_detail";
     private MovieBasic mMovie;
-    private TextView mMovieTitleTextView;
-    private TextView mMovieRatingTextView;
-    private TextView mMovieOverviewTextView;
-    private TextView mMovieReleaseDateTextView;
 
-    private ImageView mMovieBackdropImageView;
-    private ImageView mMoviePosterImageView;
+    @Bind(R.id.movieTitleTextView) TextView mMovieTitleTextView;
+    @Bind(R.id.movieRatingTextView) TextView mMovieRatingTextView;
+    @Bind(R.id.movieOverviewTextView) TextView mMovieOverviewTextView;
+    @Bind(R.id.movieReleaseDateTextView) TextView mMovieReleaseDateTextView;
+    @Bind(R.id.movieBackdropImageView) ImageView mMovieBackdropImageView;
+    @Bind(R.id.moviePosterImageView) ImageView mMoviePosterImageView;
 
     private OnFragmentInteractionListener mListener;
 
@@ -49,26 +53,21 @@ public class MovieDetailFragment extends Fragment {
         if (getArguments() != null) {
             mMovie = getArguments().getParcelable(ARG_PARAM);
         }
+
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_movie_detail, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_movie_detail, container, false);
+        ButterKnife.bind(this, view);
+        return view;
     }
 
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mMovieTitleTextView = (TextView)view.findViewById(R.id.movieTitleTextView);
-        mMovieRatingTextView = (TextView)view.findViewById(R.id.movieRatingTextView);
-        mMovieOverviewTextView = (TextView)view.findViewById(R.id.movieOverviewTextView);
-        mMovieReleaseDateTextView = (TextView)view.findViewById(R.id.movieReleaseDateTextView);
-
-        mMovieBackdropImageView = (ImageView)view.findViewById(R.id.movieBackdropImageView);
-        mMoviePosterImageView = (ImageView)view.findViewById(R.id.moviePosterImageView);
-
+        ButterKnife.bind(view);
         mMovieTitleTextView.setText(mMovie.getTitle());
         StringBuilder rating = new StringBuilder(getString(R.string.ratings));
         rating.append(" ");

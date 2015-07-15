@@ -16,6 +16,7 @@ public class DetailActivity extends AppCompatActivity implements OnFragmentInter
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         getSupportActionBar().setHomeButtonEnabled(true);
+
         if (savedInstanceState == null) {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.

@@ -24,6 +24,9 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    lintOptions {
+        disable 'InvalidPackage'
+    }
 }
 
 dependencies {
@@ -34,15 +37,10 @@ dependencies {
     compile 'com.squareup.retrofit:retrofit:1.9.0'
     compile 'com.google.code.gson:gson:2.3'
     compile 'com.android.support:palette-v7:22.0.+'
+    compile 'com.jakewharton:butterknife:7.0.1'
 }
-
-
 
 repositories {
     mavenCentral()
 }
 
-//compileOptions{
-//    sourceCompatibility JavaVersion.VERSION_1_8
-//    targetCompatibility JavaVersion.VERSION_1_8
-//}

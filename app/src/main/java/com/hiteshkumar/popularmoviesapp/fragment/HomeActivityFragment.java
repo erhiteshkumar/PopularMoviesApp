@@ -29,6 +29,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import retrofit.Callback;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
@@ -39,15 +41,17 @@ import retrofit.client.Response;
  */
 public class HomeActivityFragment extends Fragment {
 
-    private GridView mGridview;
+    @Bind(R.id.gridview) GridView mGridview;
+    @Bind(R.id.errorLayout) LinearLayout mErrorLayout;
+    @Bind(R.id.errorTextView) TextView mErrorTextView;
+    @Bind(R.id.retryButton) Button mRetryButton;
+    @Bind(R.id.progressBar) ProgressBar mProgressBar;
+
     private final String MOVIE_BUNDLE_KEY = "movie_list";
     private static  final String TAG = HomeActivityFragment.class.getName();
     private List<MovieBasic> mList;
     private String mSortingPreference;
-    private LinearLayout mErrorLayout;
-    private TextView mErrorTextView;
-    private Button mRetryButton;
-    private ProgressBar mProgressBar;
+
     public HomeActivityFragment() {
     }
 
@@ -59,21 +63,20 @@ public class HomeActivityFragment extends Fragment {
             mList = (List<MovieBasic>)savedInstanceState.get(MOVIE_BUNDLE_KEY);
         }
         setRetainInstance(true);
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_home, container, false);
+        View view =  inflater.inflate(R.layout.fragment_home, container, false);
+        ButterKnife.bind(this, view);
+        return view;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mGridview = (GridView) view.findViewById(R.id.gridview);
-        mErrorLayout = (LinearLayout) view.findViewById(R.id.errorLayout);
-        mErrorTextView = (TextView)view.findViewById(R.id.errorTextView);
-        mRetryButton = (Button) view.findViewById(R.id.retryButton);
-        mProgressBar = (ProgressBar) view.findViewById(R.id.progressBar);
+        ButterKnife.bind(view);
         if(getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
         {
             mGridview.setNumColumns(5);
